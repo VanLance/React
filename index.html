@@ -20,17 +20,32 @@
                         <li key={name}>
                             <span>{name} </span>
                             <button onClick={() => props.onRemoveFriend(name)}>Remove</button>
+                            <button>Deactivate</button>
                         </li>
                     ))}
                 </ul>
             )
         }
-        
+        function UnfriendsList (props) {
+            return (
+                <ul>
+                    {props.list.map((name) => (
+                        <li key={name}>
+                            <span>{name} </span>
+                            <button onClick={() => props.onRemoveFriend(name)}>Remove</button>
+                            <button onClick={() => props.onUnfriend(name)}>Deactivate</button>
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+
         class App extends React.Component{
             constructor(props){
                 super(props)
 
                 this.state= {
+                    unfriends: [],
                     friends: ['Naylon', 'Drew', 'Thunder'],
                     input: 'poop',
                 }
@@ -38,6 +53,8 @@
                 this.handleRemoveFriend = this.handleRemoveFriend.bind(this)
                 this.updateInput = this.updateInput.bind(this)
                 this.handleAddFriend = this.handleAddFriend.bind(this)
+                this.handleClearFriends= this.handleClearFriends.bind(this)
+                this.handleUnfriend = this.handleUnfriend.bind(this)
             }
             handleAddFriend() {
                 this.setState((currentState) => {
@@ -53,6 +70,23 @@
                         friends: currentState.friends.filter((friend) => friend !== name)
                     }
                 })
+            }
+
+            handleUnfriend(name){
+                this.setState((currentState) => {
+                    return{
+                        friends: currentState.friends.filter((friend) => friend !== name),
+                        unfriends: currentState.unfriends.concat((friend) => friend == name),
+                    }
+                })
+            }
+
+            handleClearFriends(){
+                this.setState((currentState) => {
+                    return {
+                        friends : []
+                }
+            })
             }
             updateInput(e) {
                 const value = e.target.value
@@ -73,10 +107,18 @@
                             onChange={this.updateInput}
                         />
                         <button onClick={this.handleAddFriend}>Submit</button>
+                        <button onClick={this.handleClearFriends}>Clear All</button>
+                        <h1>Active Friends</h1>
                         <FriendsList 
                             list={this.state.friends} 
                             onRemoveFriend={this.handleRemoveFriend}
                         />
+                        <h1>Inactive Friends</h1>
+                        <UnfriendsList
+                        list={this.state.unfriends} 
+                            onUnfriend={this.handleUnfriend}
+                        />
+                        
                     </div>
                 )
             }
